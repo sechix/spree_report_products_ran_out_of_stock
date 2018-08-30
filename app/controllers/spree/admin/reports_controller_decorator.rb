@@ -20,13 +20,9 @@ Spree::Admin::ReportsController.class_eval do
         params[:q][:s] ||= "updated_at desc"
 
         # ransack don't work well with includes/join
-        @search = Spree::Variant.ransack(params[:q])
-
-        @variants = Spree::Variant.includes(:stock_items).where("spree_stock_items.count_on_hand = 0").references(:spree_stock_items).where("spree_variants.updated_at >= ?", params[:q][:updated_at_gt])
-
-        if params[:q][:updated_at_lt].present?
-            @variants = @variants.where("spree_variants.updated_at <= ?", params[:q][:updated_at_lt])
-        end
+        
+        @search = Spree::Variant.out_of_stock.ransack(params[:q])
+        @variants = @search.result(distinct: true).page(params[:page]).per(Spree::Config[:admin_products_per_page])
       end
 
 end
