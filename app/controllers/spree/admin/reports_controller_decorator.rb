@@ -21,7 +21,7 @@ Spree::Admin::ReportsController.class_eval do
 
         # ransack don't work well with includes/join
         
-        @search = Spree::Variant.out_of_stock.ransack(params[:q])
+        @search = Spree::Variant.active.out_of_stock.ransack(params[:q])
         @variants = @search.result(distinct: true).page(params[:page]).per(Spree::Config[:admin_products_per_page])
       end
 
