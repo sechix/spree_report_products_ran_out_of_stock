@@ -5,9 +5,9 @@ Spree::Variant.class_eval do
     
     def self.out_of_stock(stock_locations = nil)
       return all unless Spree::Config.track_inventory_levels
-      out_of_stock_variants = joins(:stock_items).where(Spree::StockItem.arel_table[:count_on_hand].eq(0))
+      out_of_stock_variants = joins(:stock_items).where(Spree::StockItem.arel_table[:count_on_hand].eq(0), Spree::Variant.arel_table[:is_master].eq(false))
       if stock_locations.present?
-        out_of_stock_variants = in_stock_variants.where(spree_stock_items: { stock_location_id: stock_locations.map(&:id) })
+        out_of_stock_variants = out_stock_variants.where(spree_stock_items: { stock_location_id: stock_locations.map(&:id) })
       end
       out_of_stock_variants
     end
